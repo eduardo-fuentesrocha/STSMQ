@@ -343,12 +343,13 @@ export default function DashboardClient({
               </div>
             </div>
           )}
-
           {tabActiva === 'jubilaciones' && (
             <JubilacionesTab
-              numeroEmpleado={usuario.numeroEmpleado}
-              nombreCompleto={usuario.nombreCompleto}
-              initialSolicitud={initialJubilaciones[0] ?? null}
+             usuario={{
+              numeroEmpleado: usuario.numeroEmpleado,
+              nombreCompleto: usuario.nombreCompleto,
+             }}
+            initialSolicitud={initialJubilaciones[0] ?? null}
             />
           )}
           {tabActiva === 'becas' && (
