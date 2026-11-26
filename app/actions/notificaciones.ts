@@ -9,9 +9,17 @@ import { obtenerUsuarioActual } from '@/app/actions/auth'
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter: new PrismaPg(pool) })
 
+export type TipoTramiteNotificacion =
+  | 'becas'
+  | 'materiales'
+  | 'nacimiento'
+  | 'matrimonio'
+  | 'utiles'
+  | 'jubilaciones'
+
 export async function marcarNotificacionRechazoVista(
   id: string,
-  tipo: 'becas' | 'materiales' | 'nacimiento' | 'matrimonio' | 'utiles'
+  tipo: TipoTramiteNotificacion
 ) {
   const usuario = await obtenerUsuarioActual()
   if (!usuario) return { success: false }
@@ -24,6 +32,7 @@ export async function marcarNotificacionRechazoVista(
   if (tipo === 'nacimiento') await prisma.solicitudNacimiento.updateMany({ where, data })
   if (tipo === 'matrimonio') await prisma.solicitudMatrimonio.updateMany({ where, data })
   if (tipo === 'utiles') await prisma.solicitudUtiles.updateMany({ where, data })
+  if (tipo === 'jubilaciones') await prisma.solicitudJubilacion.updateMany({ where, data })
 
   revalidatePath('/dashboard')
   return { success: true }
