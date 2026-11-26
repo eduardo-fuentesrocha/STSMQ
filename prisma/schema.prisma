@@ -33,6 +33,7 @@ model Usuario {
   solicitudesMaterial SolicitudMaterial[]
   solicitudesMatr     SolicitudMatrimonio[]
   solicitudesNac      SolicitudNacimiento[]
+  solicitudJubilacion SolicitudJubilacion?
 }
 
 model Familiar {
@@ -127,4 +128,36 @@ model SolicitudUtiles {
   fechaGestion      DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+}
+
+model SolicitudJubilacion {
+  id                          String    @id @default(uuid())
+  numeroEmpleado              String    @unique
+  telefonoContacto            String
+
+  actaNacimientoUrl           String
+  actaNacimientoEstatus       String    @default("En Revisión")
+  actaNacimientoMotivo        String?
+
+  ineUrl                      String
+  ineEstatus                  String    @default("En Revisión")
+  ineMotivo                   String?
+
+  semanasCotizadasImssUrl     String
+  semanasCotizadasImssEstatus String    @default("En Revisión")
+  semanasCotizadasImssMotivo  String?
+
+  recibosNominaUrl            String
+  recibosNominaEstatus        String    @default("En Revisión")
+  recibosNominaMotivo         String?
+
+  estatus                     String    @default("En Revisión")
+  motivoRechazo               String?
+  notificacionVista           Boolean   @default(false)
+  gestionadoPor               String?
+  fechaGestion                DateTime?
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
+
+  usuario                     Usuario   @relation(fields: [numeroEmpleado], references: [numeroEmpleado], onDelete: Cascade)
 }

@@ -89,7 +89,11 @@ export default async function DashboardPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  // Formatear la estructura que espera BecasTab
+  // 7. Buscar la solicitud única de jubilación de este empleado
+  const solicitudJubilacionRaw = await prisma.solicitudJubilacion.findUnique({
+    where: { numeroEmpleado },
+  });
+
   const initialBecas = solicitudesBecasRaw.map((item) => ({
     id: item.id,
     folio: `BEC-2026-${item.id.slice(0, 4).toUpperCase()}`,
@@ -153,13 +157,43 @@ export default async function DashboardPage() {
     fecha: item.createdAt.toISOString(),
   }));
 
+  const initialJubilaciones = solicitudJubilacionRaw
+    ? [
+        {
+          id: solicitudJubilacionRaw.id,
+          folio: `JUB-2026-${solicitudJubilacionRaw.id.slice(0, 4).toUpperCase()}`,
+          telefonoContacto: solicitudJubilacionRaw.telefonoContacto,
+          actaNacimientoUrl: solicitudJubilacionRaw.actaNacimientoUrl,
+          actaNacimientoEstatus: solicitudJubilacionRaw.actaNacimientoEstatus || 'En Revisión',
+          actaNacimientoMotivo: solicitudJubilacionRaw.actaNacimientoMotivo ?? null,
+          ineUrl: solicitudJubilacionRaw.ineUrl,
+          ineEstatus: solicitudJubilacionRaw.ineEstatus || 'En Revisión',
+          ineMotivo: solicitudJubilacionRaw.ineMotivo ?? null,
+          semanasCotizadasImssUrl: solicitudJubilacionRaw.semanasCotizadasImssUrl,
+          semanasCotizadasImssEstatus: solicitudJubilacionRaw.semanasCotizadasImssEstatus || 'En Revisión',
+          semanasCotizadasImssMotivo: solicitudJubilacionRaw.semanasCotizadasImssMotivo ?? null,
+          recibosNominaUrl: solicitudJubilacionRaw.recibosNominaUrl,
+          recibosNominaEstatus: solicitudJubilacionRaw.recibosNominaEstatus || 'En Revisión',
+          recibosNominaMotivo: solicitudJubilacionRaw.recibosNominaMotivo ?? null,
+          estatus: solicitudJubilacionRaw.estatus || 'En Revisión',
+          motivoRechazo: solicitudJubilacionRaw.motivoRechazo ?? null,
+          notificacionVista: solicitudJubilacionRaw.notificacionVista ?? false,
+          fechaGestion: solicitudJubilacionRaw.fechaGestion
+            ? solicitudJubilacionRaw.fechaGestion.toISOString()
+            : null,
+          fecha: solicitudJubilacionRaw.createdAt.toISOString(),
+        },
+      ]
+    : [];
+
   return (
     <DashboardClient 
       initialSolicitudes={initialBecas}
       initialMateriales={initialMateriales}  
       initialNacimientos={initialNacimientos}
       initialMatrimonios={initialMatrimonios}
-      initialUtiles={initialUtiles} 
+      initialUtiles={initialUtiles}
+      initialJubilaciones={initialJubilaciones}
       usuario={usuario}
     />
   );

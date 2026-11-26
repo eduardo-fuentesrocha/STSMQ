@@ -25,6 +25,7 @@ import BecasTab from '@/app/dashboard/components/tabs/BecasTab';
 import NacimientoTab, { SolicitudNacimiento } from '@/app/dashboard/components/tabs/NacimientoTab';
 import MatrimonioTab, { SolicitudMatrimonioInfo } from '@/app/dashboard/components/tabs/MatrimonioTab';
 import UtilesTab, { SolicitudUtilesInfo } from '@/app/dashboard/components/tabs/UtilesTab';
+import JubilacionesTab, { SolicitudJubilacionItem } from '@/app/dashboard/components/tabs/JubilacionesTab';
 import TramiteGenericoTab from '@/app/dashboard/components/tabs/TramiteGenericoTab';
 import SugerenciasTab from '@/app/dashboard/components/tabs/SugerenciasTab';
 
@@ -65,7 +66,13 @@ interface UsuarioInfo {
   contactoEmergenciaTelefono?: string;
 }
 
-type TipoTramiteNotificacion = 'becas' | 'materiales' | 'nacimiento' | 'matrimonio' | 'utiles';
+type TipoTramiteNotificacion =
+  | 'becas'
+  | 'materiales'
+  | 'nacimiento'
+  | 'matrimonio'
+  | 'utiles'
+  | 'jubilaciones';
 
 const UNA_SEMANA_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -83,6 +90,7 @@ export default function DashboardClient({
   initialNacimientos = [],
   initialMatrimonios = [],
   initialUtiles = [],
+  initialJubilaciones = [],
   usuario 
 }: { 
   initialSolicitudes: SolicitudBeca[];
@@ -90,6 +98,7 @@ export default function DashboardClient({
   initialNacimientos?: (SolicitudNacimiento & SolicitudBaseNotificacion)[];
   initialMatrimonios?: (SolicitudMatrimonioInfo & SolicitudBaseNotificacion)[];
   initialUtiles?: (SolicitudUtilesInfo & SolicitudBaseNotificacion)[];
+  initialJubilaciones?: (SolicitudJubilacionItem & SolicitudBaseNotificacion)[];
   usuario: UsuarioInfo;
 }) {
   const [tabActiva, setTabActiva] = useState<string | null>(null);
@@ -162,6 +171,9 @@ export default function DashboardClient({
     ...initialUtiles
       .filter(esAlertaVisible)
       .map((s) => ({ id: s.id, tab: 'utiles' as const, titulo: `Útiles Escolares (${s.hijo})`, motivo: s.motivoRechazo! })),
+    ...initialJubilaciones
+      .filter(esAlertaVisible)
+      .map((s) => ({ id: s.id, tab: 'jubilaciones' as const, titulo: `Jubilación (${s.folio})`, motivo: s.motivoRechazo! })),
   ];
 
   return (
@@ -332,6 +344,13 @@ export default function DashboardClient({
             </div>
           )}
 
+          {tabActiva === 'jubilaciones' && (
+            <JubilacionesTab
+              numeroEmpleado={usuario.numeroEmpleado}
+              nombreCompleto={usuario.nombreCompleto}
+              initialSolicitud={initialJubilaciones[0] ?? null}
+            />
+          )}
           {tabActiva === 'becas' && (
             <BecasTab 
               initialSolicitudes={initialSolicitudes} 
@@ -364,7 +383,7 @@ export default function DashboardClient({
           {tabActiva === 'sugerencias' && (
             <SugerenciasTab usuario={{ nombreCompleto: usuario.nombreCompleto, numeroEmpleado: usuario.numeroEmpleado, email: usuario.email ?? '' }} />
           )}
-          {['jubilaciones', 'pensiones', 'fallecimiento', 'salon'].includes(tabActiva || '') && (
+          {['pensiones', 'fallecimiento', 'salon'].includes(tabActiva || '') && (
             <TramiteGenericoTab tipo={tabActiva!} />
           )}
         </div>

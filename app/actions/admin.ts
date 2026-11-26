@@ -12,6 +12,19 @@ const pool = new Pool({ connectionString })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
+export type CampoDocumentoJubilacion =
+  | 'actaNacimiento'
+  | 'ine'
+  | 'semanasCotizadasImss'
+  | 'recibosNomina'
+
+const ETIQUETAS_DOCUMENTO_JUBILACION: Record<CampoDocumentoJubilacion, string> = {
+  actaNacimiento: 'Copia Certificada del Acta de Nacimiento',
+  ine: 'Credencial del INE (Copia PDF)',
+  semanasCotizadasImss: 'Constancia de Semanas Cotizadas en el IMSS',
+  recibosNomina: '2 Últimos Recibos de Nómina',
+}
+
 // 🛡️ Helper interno para validar administrador y construir los datos de auditoría
 async function validarYPrepararAuditoria(nuevoEstatus: string, motivoRechazo?: string) {
   const admin = await obtenerUsuarioActual()
@@ -160,7 +173,6 @@ export async function actualizarEstatusNacimiento(
     }
 
     if (nuevoEstatus === 'Aprobada') {
-      // Transacción atómica: Actualiza estatus/auditoría y crea registro en la tabla Familiar
       await prisma.$transaction([
         prisma.solicitudNacimiento.update({
           where: { id },
@@ -220,7 +232,6 @@ export async function actualizarEstatusMatrimonio(
     }
 
     if (nuevoEstatus === 'Aprobada') {
-      // Transacción atómica: Actualiza estatus/auditoría y crea registro del cónyuge en la tabla Familiar
       await prisma.$transaction([
         prisma.solicitudMatrimonio.update({
           where: { id },
@@ -295,7 +306,111 @@ export async function actualizarEstatusUtiles(
 }
 
 // ==========================================
-// 6. VISUALIZACIÓN DE ARCHIVOS PRIVADOS
+// 6. REVISIÓN INDIVIDUAL DE DOCUMENTOS DE JUBILACIÓN
+// ==========================================
+export async function actualizarEstatusDocumentoJubilacion(
+  id: string,
+  documento: CampoDocumentoJubilacion,
+  nuevoEstatus: 'Aprobada' | 'Rechazada',
+  motivoRechazo?: string
+) {
+  try {
+    const admin = await obtenerUsuarioActual()
+
+    if (!admin || (admin.rol !== 'admin' && admin.rol !== 'ADMIN')) {
+      return { success: false, error: 'Acceso denegado: Se requieren permisos de administrador.' }
+    }
+
+    if (nuevoEstatus === 'Rechazada' && (!motivoRechazo || motivoRechazo.trim() === '')) {
+      return { success: false, error: 'Debes indicar el motivo del rechazo para este documento.' }
+    }
+
+    const actual = await prisma.solicitudJubilacion.findUnique({ where: { id } })
+    if (!actual) {
+      return { success: false, error: 'No se encontró la solicitud de jubilación.' }
+    }
+
+    const motivoLimpio = nuevoEstatus === 'Rechazada' ? motivoRechazo!.trim() : null
+
+    const estados = {
+      actaNacimiento:
+        documento === 'actaNacimiento' ? nuevoEstatus : actual.actaNacimientoEstatus,
+      ine: documento === 'ine' ? nuevoEstatus : actual.ineEstatus,
+      semanasCotizadasImss:
+        documento === 'semanasCotizadasImss' ? nuevoEstatus : actual.semanasCotizadasImssEstatus,
+      recibosNomina:
+        documento === 'recibosNomina' ? nuevoEstatus : actual.recibosNominaEstatus,
+    }
+
+    const motivos = {
+      actaNacimiento:
+        documento === 'actaNacimiento' ? motivoLimpio : actual.actaNacimientoMotivo,
+      ine: documento === 'ine' ? motivoLimpio : actual.ineMotivo,
+      semanasCotizadasImss:
+        documento === 'semanasCotizadasImss' ? motivoLimpio : actual.semanasCotizadasImssMotivo,
+      recibosNomina:
+        documento === 'recibosNomina' ? motivoLimpio : actual.recibosNominaMotivo,
+    }
+
+    const listaEstados = Object.values(estados)
+    const estatusGlobal = listaEstados.some((e) => e === 'Rechazada')
+      ? 'Rechazada'
+      : listaEstados.every((e) => e === 'Aprobada')
+      ? 'Aprobada'
+      : 'En Revisión'
+
+    const resumenMotivos = (Object.keys(estados) as CampoDocumentoJubilacion[])
+      .filter((key) => estados[key] === 'Rechazada' && motivos[key])
+      .map((key) => `${ETIQUETAS_DOCUMENTO_JUBILACION[key]}: ${motivos[key]}`)
+      .join(' | ')
+
+    const actualizada = await prisma.solicitudJubilacion.update({
+      where: { id },
+      data: {
+        actaNacimientoEstatus: estados.actaNacimiento,
+        actaNacimientoMotivo: motivos.actaNacimiento,
+        ineEstatus: estados.ine,
+        ineMotivo: motivos.ine,
+        semanasCotizadasImssEstatus: estados.semanasCotizadasImss,
+        semanasCotizadasImssMotivo: motivos.semanasCotizadasImss,
+        recibosNominaEstatus: estados.recibosNomina,
+        recibosNominaMotivo: motivos.recibosNomina,
+        estatus: estatusGlobal,
+        motivoRechazo: resumenMotivos || null,
+        notificacionVista: estatusGlobal === 'Rechazada' ? false : true,
+        gestionadoPor: `${admin.nombreCompleto} (${admin.numeroEmpleado})`,
+        fechaGestion: new Date(),
+      },
+    })
+
+    if (nuevoEstatus === 'Rechazada' || estatusGlobal === 'Aprobada') {
+      await notificarEmpleadoPorCorreo({
+        numeroEmpleado: actualizada.numeroEmpleado,
+        tipoTramite: 'Jubilación',
+        folio: `JUB-2026-${actualizada.id.slice(0, 4).toUpperCase()}`,
+        detalleTramite:
+          nuevoEstatus === 'Rechazada'
+            ? `Documento rechazado: ${ETIQUETAS_DOCUMENTO_JUBILACION[documento]}`
+            : 'Los 4 documentos digitales fueron aprobados. Acude al Sindicato con tus 2 fotografías tamaño pasaporte (cuadradas, blanco y negro) y tu INE original.',
+        estatus: nuevoEstatus === 'Rechazada' ? 'Rechazada' : 'Aprobada',
+        motivoRechazo: motivoLimpio,
+      })
+    }
+
+    revalidatePath('/admin')
+    revalidatePath('/dashboard')
+    return { success: true, data: actualizada }
+  } catch (error: any) {
+    console.error('Error al actualizar estatus de documento de jubilación:', error)
+    return {
+      success: false,
+      error: error?.message || 'No se pudo actualizar el estatus del documento.',
+    }
+  }
+}
+
+// ==========================================
+// 7. VISUALIZACIÓN DE ARCHIVOS PRIVADOS
 // ==========================================
 export async function obtenerUrlArchivoPrivado(urlOriginal: string) {
   try {

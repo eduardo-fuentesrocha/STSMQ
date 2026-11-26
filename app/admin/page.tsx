@@ -79,6 +79,26 @@ export default async function AdminPage() {
     console.error('Error al cargar útiles admin:', error)
   }
 
+  // 6. Obtener solicitudes de Jubilación (con nombre del trabajador)
+  let jubilaciones: any[] = []
+  try {
+    const jubilacionesRaw = await prisma.solicitudJubilacion.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        usuario: {
+          select: { nombreCompleto: true },
+        },
+      },
+    })
+
+    jubilaciones = jubilacionesRaw.map((item) => ({
+      ...item,
+      nombreTrabajador: item.usuario?.nombreCompleto ?? '',
+    }))
+  } catch (error) {
+    console.error('Error al cargar jubilaciones admin:', error)
+  }
+
   return (
     <AdminDashboardClient
       initialBecas={becas}
@@ -86,6 +106,7 @@ export default async function AdminPage() {
       initialNacimientos={nacimientos}
       initialMatrimonios={matrimonios}
       initialUtiles={utiles}
+      initialJubilaciones={jubilaciones}
       adminNombre={usuario.nombreCompleto}
     />
   )
