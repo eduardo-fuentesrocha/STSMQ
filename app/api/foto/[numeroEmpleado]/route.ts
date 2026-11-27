@@ -48,15 +48,21 @@ export async function GET(
     }
 
     const { res: r2Response, path: rutaEncontrada } = encontrada;
-    const imageBytes = await r2Response.Body.transformToByteArray();
+    const body = r2Response.Body;
+
+    if (!body) {
+      return new NextResponse('Fotografía no encontrada', { status: 404 });
+    }
+
+    const imageBytes = await body.transformToByteArray();
     const buffer = Buffer.from(imageBytes);
     const contentType =
-  r2Response.ContentType ||
-  (rutaEncontrada.endsWith('.png')
-    ? 'image/png'
-    : rutaEncontrada.endsWith('.webp')
-      ? 'image/webp'
-      : 'image/jpeg');
+      r2Response.ContentType ||
+      (rutaEncontrada.endsWith('.png')
+        ? 'image/png'
+        : rutaEncontrada.endsWith('.webp')
+          ? 'image/webp'
+          : 'image/jpeg');
 
     return new NextResponse(buffer, {
       headers: {
