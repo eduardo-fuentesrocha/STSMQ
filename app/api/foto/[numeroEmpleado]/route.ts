@@ -1,6 +1,30 @@
 import { NextResponse } from 'next/server';
 import { obtenerArchivoR2 } from '@/app/lib/r2';
 
+async function buscarFotoEnR2(numero: string) {
+  const posiblesRutas = [
+    `fotos-credencial/${numero}.jpeg`,
+    `fotos-credencial/${numero}.jpg`,
+    `fotos-credencial/${numero}.png`,
+    `fotos-credencial/${numero}.webp`,
+  ];
+
+  for (const path of posiblesRutas) {
+    try {
+      const res = await obtenerArchivoR2(path);
+      if (res && res.Body) {
+        return { res, path };
+      }
+    } catch (e: any) {
+      if (e?.name !== 'NoSuchKey' && e?.$metadata?.httpStatusCode !== 404) {
+        console.error(`Error inesperado consultando ${path} en R2:`, e);
+      }
+    }
+  }
+
+  return null;
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ numeroEmpleado: string }> }
@@ -13,40 +37,26 @@ export async function GET(
       return new NextResponse('Número de empleado no proporcionado', { status: 400 });
     }
 
-    const posiblesRutas = [
-      `fotos-credencial/${numeroEmpleado}.jpeg`,
-      `fotos-credencial/${numeroEmpleado}.jpg`,
-      `fotos-credencial/${numeroEmpleado}.png`,
-    ];
+    let encontrada = await buscarFotoEnR2(numeroEmpleado);
 
-    let r2Response = null;
-    let rutaEncontrada = '';
-
-    for (const path of posiblesRutas) {
-      try {
-        const res = await obtenerArchivoR2(path);
-
-        if (res && res.Body) {
-          r2Response = res;
-          rutaEncontrada = path;
-          break;
-        }
-      } catch (e: any) {
-        // Si el objeto no existe con esta extensión (NoSuchKey), continúa con la siguiente
-        if (e?.name !== 'NoSuchKey' && e?.$metadata?.httpStatusCode !== 404) {
-          console.error(`Error inesperado consultando ${path} en R2:`, e);
-        }
-      }
+    if (!encontrada && numeroEmpleado !== '00000') {
+      encontrada = await buscarFotoEnR2('00000');
     }
 
-    if (!r2Response || !r2Response.Body) {
+    if (!encontrada || !encontrada.res.Body) {
       return new NextResponse('Fotografía no encontrada', { status: 404 });
     }
 
+    const { res: r2Response, path: rutaEncontrada } = encontrada;
     const imageBytes = await r2Response.Body.transformToByteArray();
     const buffer = Buffer.from(imageBytes);
     const contentType =
-      r2Response.ContentType || (rutaEncontrada.endsWith('.png') ? 'image/png' : 'image/jpeg');
+  r2Response.ContentType ||
+  (rutaEncontrada.endsWith('.png')
+    ? 'image/png'
+    : rutaEncontrada.endsWith('.webp')
+      ? 'image/webp'
+      : 'image/jpeg');
 
     return new NextResponse(buffer, {
       headers: {

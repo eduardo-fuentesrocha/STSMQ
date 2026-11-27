@@ -76,8 +76,8 @@ export async function buscarEmpleadoCredencial(query: string) {
       )
     })
 
-    // Limitamos a 10 resultados para mantener la interfaz fluida
-    return empleadosFiltrados.slice(0, 10)
+    // Limitamos a 20 resultados para mantener la interfaz fluida
+    return empleadosFiltrados.slice(0, 20)
   } catch (error) {
     console.error('Error al buscar empleados para credencial:', error)
     return []

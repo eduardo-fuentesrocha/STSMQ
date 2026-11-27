@@ -141,15 +141,19 @@ export default async function AdminCredencialesPage({
                   <div className="space-y-0.5 text-[9.5px] bg-white/60 p-2 rounded-xl border border-zinc-200/85 w-full">
                     <div>
                       <span className="font-bold uppercase tracking-wide text-[8.5px] text-[#C05A12] mr-1">FECHA DE INGRESO:</span>
-                      <strong className="text-zinc-950 font-extrabold text-[9.5px]">{empleado.fechaIngreso || '14/05/2004'}</strong>
+                      <strong className="text-zinc-950 font-extrabold text-[9.5px]">{empleado.fechaIngreso || 'NA'}</strong>
                     </div>
                     <div>
                       <span className="font-bold uppercase tracking-wide text-[8.5px] text-[#C05A12] mr-1">PUESTO:</span>
-                      <strong className="text-zinc-950 font-extrabold text-[9.5px]">{empleado.puesto || 'Operador de Maquinaria A'}</strong>
+                      <strong className="text-zinc-950 font-extrabold text-[9.5px]">{empleado.puesto || 'NA'}</strong>
                     </div>
                     <div>
-                      <span className="font-bold uppercase tracking-wide text-[8.5px] text-[#C05A12] mr-1">DEPARTAMENTO:</span>
-                      <strong className="text-zinc-950 font-extrabold text-[9.5px]">{empleado.departamento || 'Aseo Público'}</strong>
+                      <span className="font-bold uppercase tracking-wide text-[8.5px] text-[#C05A12] mr-1">
+                      DEPARTAMENTO:
+                      </span>
+                      <strong className="text-zinc-950 font-extrabold text-[9.5px]">
+                      {empleado.departamento?.replace(/^DEPARTAMENTO\s+(DE\s+)?/i, '').trim() || 'NA'}
+                      </strong>
                     </div>
                   </div>
 
@@ -159,24 +163,24 @@ export default async function AdminCredencialesPage({
                       <div className="space-y-0.5">
                         <div>
                           <span className="font-bold text-[8px] uppercase text-[#C05A12] block">CURP:</span>
-                          <span className="font-mono font-bold text-zinc-950 text-[8px]">{empleado.curp || 'HELA741219HGTNTR08'}</span>
+                          <span className="font-mono font-bold text-zinc-950 text-[8px]">{empleado.curp || 'NA'}</span>
                         </div>
                         <div className="pt-0.5">
                           <span className="font-bold text-[8px] uppercase text-[#C05A12] block">IMSS:</span>
-                          <span className="font-mono font-bold text-zinc-950 text-[8px]">{empleado.nss || '14747414363'}</span>
+                          <span className="font-mono font-bold text-zinc-950 text-[8px]">{empleado.nss || 'NA'}</span>
                         </div>
                       </div>
                       <div className="space-y-0">
                         <div className="pb-0">
                           <span className="font-bold text-[8px] uppercase text-[#C05A12] mr-1">TIPO DE SANGRE:</span>
-                          <span className="font-black text-zinc-950 text-[8.5px]">{empleado.tipoSangre || 'O+'}</span>
+                          <span className="font-black text-zinc-950 text-[8.5px]">{empleado.tipoSangre || 'NA'}</span>
                         </div>
                         <div>
                           <span className="pt-1 font-bold text-[8px] uppercase text-[#C05A12] block">CONTACTO DE EMERGENCIA:</span>
-                          <p className="font-bold text-zinc-950 text-[8.5px] leading-tight mt-0.5">{empleado.contactoEmergenciaNombre || 'Rebeca Esparza Ruiz'}</p>
+                          <p className="font-bold text-zinc-950 text-[8.5px] leading-tight mt-0.5">{empleado.contactoEmergenciaNombre || 'NA'}</p>
                         </div>
                         <div className="pb-0.5">
-                          <span className="font-bold text-zinc-950 text-[8px]">Tel. {empleado.contactoEmergenciaTelefono || '442 716 3120'}</span>
+                          <span className="font-bold text-zinc-950 text-[8px]">Tel. {empleado.contactoEmergenciaTelefono || 'NA'}</span>
                         </div>
                       </div>
                     </div>

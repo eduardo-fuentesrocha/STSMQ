@@ -88,15 +88,17 @@ export default function CredencialPage() {
               <div className="space-y-0.5 text-[9.5px] bg-white/60 p-2 rounded-xl border border-zinc-200/85 w-full">
                 <div>
                   <span className="font-bold uppercase tracking-wide text-[8.5px] text-[#C05A12] mr-1">FECHA DE INGRESO:</span>
-                  <strong className="text-zinc-950 font-extrabold text-[9.5px]">{usuario.fechaIngreso || '14/05/2004'}</strong>
+                  <strong className="text-zinc-950 font-extrabold text-[9.5px]">{usuario.fechaIngreso || 'NA'}</strong>
                 </div>
                 <div>
                   <span className="font-bold uppercase tracking-wide text-[8.5px] text-[#C05A12] mr-1">PUESTO:</span>
-                  <strong className="text-zinc-950 font-extrabold text-[9.5px]">{usuario.puesto || 'Operador de Maquinaria A'}</strong>
+                  <strong className="text-zinc-950 font-extrabold text-[9.5px]">{usuario.puesto || 'NA'}</strong>
                 </div>
                 <div>
                   <span className="font-bold uppercase tracking-wide text-[8.5px] text-[#C05A12] mr-1">DEPARTAMENTO:</span>
-                  <strong className="text-zinc-950 font-extrabold text-[9.5px]">{usuario.departamento || 'Aseo Público'}</strong>
+                  <strong className="text-zinc-950 font-extrabold text-[9.5px]">
+                  {usuario.departamento?.replace(/^DEPARTAMENTO\s+(DE\s+)?/i, '').trim() || 'NA'}
+                  </strong>
                 </div>
               </div>
 
@@ -106,24 +108,24 @@ export default function CredencialPage() {
                   <div className="space-y-0.5">
                     <div>
                       <span className="font-bold text-[8px] uppercase text-[#C05A12] block">CURP:</span>
-                      <span className="font-mono font-bold text-zinc-950 text-[8px]">{usuario.curp || 'HELA741219HGTNTR08'}</span>
+                      <span className="font-mono font-bold text-zinc-950 text-[8px]">{usuario.curp || 'NA'}</span>
                     </div>
                     <div className="pt-0.5">
                       <span className="font-bold text-[8px] uppercase text-[#C05A12] block">IMSS:</span>
-                      <span className="font-mono font-bold text-zinc-950 text-[8px]">{usuario.nss || '14747414363'}</span>
+                      <span className="font-mono font-bold text-zinc-950 text-[8px]">{usuario.nss || 'NA'}</span>
                     </div>
                   </div>
                   <div className="space-y-0">
                     <div className="pb-0">
                       <span className="font-bold text-[8px] uppercase text-[#C05A12] mr-1">TIPO DE SANGRE:</span>
-                      <span className="font-black text-zinc-950 text-[8.5px]">{usuario.tipoSangre || 'O+'}</span>
+                      <span className="font-black text-zinc-950 text-[8.5px]">{usuario.tipoSangre || 'NA'}</span>
                     </div>
                     <div>
                       <span className="pt-1 font-bold text-[8px] uppercase text-[#C05A12] block">CONTACTO DE EMERGENCIA:</span>
-                      <p className="font-bold text-zinc-950 text-[8.5px] leading-tight mt-0.5">{usuario.contactoEmergenciaNombre || 'Rebeca Esparza Ruiz'}</p>
+                      <p className="font-bold text-zinc-950 text-[8.5px] leading-tight mt-0.5">{usuario.contactoEmergenciaNombre || 'NA'}</p>
                     </div>
                     <div className="pb-0.5">
-                      <span className="font-bold text-zinc-950 text-[8px]">Tel. {usuario.contactoEmergenciaTelefono || '442 716 3120'}</span>
+                      <span className="font-bold text-zinc-950 text-[8px]">Tel. {usuario.contactoEmergenciaTelefono || 'NA'}</span>
                     </div>
                   </div>
                 </div>
@@ -206,15 +208,17 @@ export default function CredencialPage() {
                   <div className="space-y-1 text-[10px] bg-white/60 p-2.5 rounded-xl border border-zinc-200/80">
                     <div>
                       <span className="font-bold uppercase tracking-wide text-[12px] text-[#C05A12] mr-1">FECHA DE INGRESO:</span>
-                      <strong className="text-zinc-950 font-extrabold text-[12px]">{usuario.fechaIngreso || '14/05/2004'}</strong>
+                      <strong className="text-zinc-950 font-extrabold text-[12px]">{usuario.fechaIngreso || 'NA'}</strong>
                     </div>
                     <div>
                       <span className="font-bold uppercase tracking-wide text-[12px] text-[#C05A12] mr-1">PUESTO:</span>
-                      <strong className="text-zinc-950 font-extrabold text-[12px]">{usuario.puesto || 'Operador de Maquinaria A'}</strong>
+                      <strong className="text-zinc-950 font-extrabold text-[12px]">{usuario.puesto || 'NA'}</strong>
                     </div>
                     <div>
                       <span className="font-bold uppercase tracking-wide text-[12px] text-[#C05A12] mr-1">DEPARTAMENTO:</span>
-                      <strong className="text-zinc-950 font-extrabold text-[12px]">{usuario.departamento || 'Aseo Público'}</strong>
+                      <strong className="text-zinc-950 font-extrabold text-[12px]">
+                      {usuario.departamento?.replace(/^DEPARTAMENTO\s+(DE\s+)?/i, '').trim() || 'NA'}
+                      </strong>
                     </div>
                   </div>
 
@@ -223,24 +227,24 @@ export default function CredencialPage() {
                       <div className="space-y-0.5">
                         <div>
                           <span className="font-bold text-[12px] uppercase text-[#C05A12] block">CURP:</span>
-                          <span className="font-mono font-bold text-zinc-950 text-[12px]">{usuario.curp || 'HELA741219HGTNTR08'}</span>
+                          <span className="font-mono font-bold text-zinc-950 text-[12px]">{usuario.curp || 'NA'}</span>
                         </div>
                         <div className="pt-0.5">
                           <span className="font-bold text-[12px] uppercase text-[#C05A12] block">IMSS:</span>
-                          <span className="font-mono font-bold text-zinc-950 text-[12px]">{usuario.nss || '14747414363'}</span>
+                          <span className="font-mono font-bold text-zinc-950 text-[12px]">{usuario.nss || 'NA'}</span>
                         </div>
                       </div>
                       <div className="space-y-0">
                         <div className="">
                         <span className="font-bold text-[12px] uppercase text-[#C05A12] mr-1">TIPO DE SANGRE:</span>
-                        <span className="font-black text-zinc-950 text-[12px]">{usuario.tipoSangre || 'O+'}</span>
+                        <span className="font-black text-zinc-950 text-[12px]">{usuario.tipoSangre || 'NA'}</span>
                         </div>
                         <div className="pt-1">
                           <span className="font-bold text-[12px] uppercase text-[#C05A12] block">CONTACTO DE EMERGENCIA:</span>
-                          <p className="font-bold text-zinc-950 text-[12px] leading-tight mt-0.5">{usuario.contactoEmergenciaNombre || 'Rebeca Esparza Ruiz'}</p>
+                          <p className="font-bold text-zinc-950 text-[12px] leading-tight mt-0.5">{usuario.contactoEmergenciaNombre || 'NA'}</p>
                         </div>
                         <div className="pb-0.5">
-                          <span className="font-bold text-zinc-950 text-[12px]">Tel. {usuario.contactoEmergenciaTelefono || '442 716 3120'}</span>
+                          <span className="font-bold text-zinc-950 text-[12px]">Tel. {usuario.contactoEmergenciaTelefono || 'NA'}</span>
                         </div>
                       </div>
                     </div>
