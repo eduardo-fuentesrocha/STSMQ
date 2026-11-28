@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { 
   CheckCircle2, 
   XCircle, 
@@ -15,7 +16,8 @@ import {
   Award,
   ShieldCheck,
   AlertCircle,
-  Phone
+  Phone,
+  CreditCard
 } from 'lucide-react';
 import { 
   actualizarEstatusSolicitud, 
@@ -352,13 +354,37 @@ export default function AdminDashboardClient({
   return (
     <div className="min-h-screen bg-white text-zinc-800 p-6 space-y-8 max-w-7xl mx-auto">
       {/* Header Admin */}
-      <div className="flex items-center justify-between border-b border-zinc-200 pb-4">
-        <div>
-          <span className="text-xs font-bold text-[#E07A2B] uppercase tracking-wider">Panel de Control Sindical</span>
-          <h1 className="text-2xl font-black text-zinc-900">Administración de Solicitudes</h1>
-          <p className="text-xs text-zinc-500 font-medium">Sesión de Administrador: {adminNombre}</p>
-        </div>
-      </div>
+<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-4">
+  <div>
+    <span className="text-xs font-bold text-[#E07A2B] uppercase tracking-wider">
+      Panel de Control Sindical
+    </span>
+    <h1 className="text-2xl font-black text-zinc-900">
+      Administración de Solicitudes
+    </h1>
+    <p className="text-xs text-zinc-500 font-medium">
+      Sesión de Administrador: {adminNombre}
+    </p>
+  </div>
+
+  <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+    <Link
+      href="/admin/credenciales"
+      className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-xs font-bold bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-200 transition-all shadow-sm"
+    >
+      <CreditCard className="h-4 w-4 text-[#E07A2B] shrink-0" />
+      <span>Consulta de Credenciales</span>
+    </Link>
+
+    <Link
+      href="/admin/procedimientos"
+      className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-xs font-bold bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-200 transition-all shadow-sm"
+    >
+      <FileText className="h-4 w-4 text-[#E07A2B] shrink-0" />
+      <span>Procedimientos Internos</span>
+    </Link>
+  </div>
+</div>
 
       {/* Pestañas de Navegación Admin */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 border-b border-zinc-200 pb-4">

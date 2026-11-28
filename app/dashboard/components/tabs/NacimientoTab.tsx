@@ -238,7 +238,7 @@ export default function NacimientoTab({
 
         <div className="p-4 rounded-2xl bg-white border border-zinc-200/80 flex items-center gap-3 text-xs text-zinc-500 shadow-sm font-medium">
           <AlertCircle className="h-5 w-5 text-[#E07A2B] shrink-0" />
-          <span>El área administrativa validará el acta de nacimiento antes de otorgar el alta oficial.</span>
+          <span>Los registros aprobados pasarán a formar parte del expediente de trabajo. Este registro se borrará automáticamente en 1 semana a partir del día de su aprobación.</span>
         </div>
       </div>
 

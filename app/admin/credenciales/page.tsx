@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { Search, CreditCard } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, Search, CreditCard } from 'lucide-react';
 import { buscarEmpleadoCredencial } from '@/app/actions/admin-credenciales';
 import { obtenerUsuarioActual } from '@/app/actions/auth';
 import { redirect } from 'next/navigation';
@@ -50,23 +51,28 @@ export default async function AdminCredencialesPage({
     <div className="min-h-[calc(100vh-140px)] bg-white py-8 px-4 sm:px-8 max-w-7xl mx-auto space-y-8">
       
       {/* Cabecera institucional */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full bg-[#E07A2B]/10 text-[#E07A2B] text-[10px] font-black uppercase tracking-wider">
-              Acceso Exclusivo - Secretario General
-            </span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight flex items-center gap-2.5">
-            <CreditCard className="h-6 w-6 text-[#E07A2B]" />
-            Consulta de Credenciales
-          </h1>
-          <p className="text-xs text-zinc-500 font-medium">
-            Busca por nombre, apellido o número de empleado para visualizar la credencial del Trabajador Sindicalizado.
-          </p>
-        </div>
-      </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 pb-4">
+  <div>
+    <span className="text-xs font-bold text-[#E07A2B] uppercase tracking-wider flex items-center gap-1.5">
+      <CreditCard className="h-3.5 w-3.5" />
+      <span>Panel de Control Sindical</span>
+    </span>
+    <h1 className="text-2xl font-black text-zinc-900">
+      Consulta de Credenciales
+    </h1>
+    <p className="text-xs text-zinc-500 font-medium">
+      Búsqueda y verificación de credenciales sindicales
+    </p>
+  </div>
 
+  <Link
+    href="/admin"
+    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-200 transition-all shadow-sm self-start sm:self-auto"
+  >
+    <ArrowLeft className="h-4 w-4 text-[#E07A2B]" />
+    <span>Volver al Panel</span>
+  </Link>
+</div>
       {/* 🔍 BARRA DE BÚSQUEDA NATIVA (GET) */}
       <form method="GET" className="flex gap-3 max-w-xl">
         <div className="relative flex-1">
